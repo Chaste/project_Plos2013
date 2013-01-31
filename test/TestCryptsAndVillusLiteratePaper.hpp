@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2013, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTCRYPTSANDVILLUSLITERATEPAPER_HPP_
 
 /*
- * [[Image(PaperTutorials/Plos2012:combined.png, align=right, height=202px)]]
+ * [[Image(PaperTutorials/Plos2013:combined.png, align=right, height=202px)]]
  * = Cell-based simulation: multiple crypts and a villus =
  *
  * On this wiki page we describe in detail the code that is used to run this example from the paper.
@@ -53,11 +53,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * We also show the use of lineage tracking, and cell-signalling leading to Delta-Notch patterning.
  *
- * This example uses some source files that can be found in the `Plos2012/src` folder.
+ * This example uses some source files that can be found in the `Plos2013/src` folder.
  *
  * Remember to run with `build=GccOptNative` for speed.
  * e.g.
- * `scons build=GccOptNative test_suite=projects/Plos2012/test/TestCryptsAndVillusLiteratePaper.hpp`
+ * `scons build=GccOptNative test_suite=projects/Plos2013/test/TestCryptsAndVillusLiteratePaper.hpp`
  *
  * The easiest way to visualize this simulation is with paraview.
  *
@@ -204,7 +204,7 @@ public:
          * is fairly simple.
          */
 		SimplifiedDeltaNotchOffLatticeSimulation<3> simulator(crypt);
-        simulator.SetOutputDirectory("Plos2012_MultipleCrypt");
+        simulator.SetOutputDirectory("Plos2013_MultipleCrypt");
         simulator.SetDt(1.0/120.0);
         /* We limit the output to every 120 time steps (1 hour) to reduce output file sizes */
         simulator.SetSamplingTimestepMultiple(120);

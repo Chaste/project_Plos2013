@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2013, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TESTSPIRALWAVELITERATEPAPER_HPP_
 #define TESTSPIRALWAVELITERATEPAPER_HPP_
 /*
- * [[Image(PaperTutorials/Plos2012:raw_spiral_wave_image.png, align=right, height=202px)]]
+ * [[Image(PaperTutorials/Plos2013:raw_spiral_wave_image.png, align=right, height=202px)]]
  * = Cardiac electrophysiology: spiral wave =
  *
  * On this wiki page we describe in detail the code that is used to run this example from the paper.
@@ -47,11 +47,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * The example includes a pacing protocol and model ion-channel conductance modifications that result in a stable spiral wave.
  *
  * This example uses a specially annotated CellML file, and illustrates how to change parameters in a
- * cell model in an automated manner in the associated cell factory at `Plos2012/src/SpiralWave`.
+ * cell model in an automated manner in the associated cell factory at `Plos2013/src/SpiralWave`.
  *
  * This test can be run in parallel and will speed up well proportional to the number of processors you have.
  * e.g.
- * `scons build=GccOptNative_4 test_suite=projects/Plos2012/test/TestSpiralWaveLiteratePaper.hpp`
+ * `scons build=GccOptNative_4 test_suite=projects/Plos2013/test/TestSpiralWaveLiteratePaper.hpp`
  *
  * The easiest way to visualize this simulation is with meshalyzer.
  *
@@ -93,7 +93,7 @@ public:
          * `HeartConfig::Instance()->SetIntracellularConductivities()`
          */
         HeartConfig::Instance()->SetSimulationDuration(500); //ms
-        HeartConfig::Instance()->SetOutputDirectory("Plos2012_SpiralWave");
+        HeartConfig::Instance()->SetOutputDirectory("Plos2013_SpiralWave");
         HeartConfig::Instance()->SetOutputFilenamePrefix("results");
         HeartConfig::Instance()->SetOdePdeAndPrintingTimeSteps(0.01, 0.01, 1);
 

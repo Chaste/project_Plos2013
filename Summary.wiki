@@ -16,8 +16,8 @@ Click on the images below to go to the annotated code that defines the simulatio
 The code required to run these examples can be downloaded from [http://www.cs.ox.ac.uk/chaste/download the main download site].
 For further information on using Chaste to solve these and related problems, see our [wiki:ChasteGuides extensive guide material].
 
-[[Image(raw_spiral_wave_image.png, link=wiki:PaperTutorials/Plos2012/SpiralWave, height=202px)]]
-[[Image(combined.png, link=wiki:PaperTutorials/Plos2012/CryptsAndVillus, height=202px)]]
-[[Image(spheroid_v2.png, link=wiki:PaperTutorials/Plos2012/SpheroidExperiments, height=202px)]]
+[[Image(raw_spiral_wave_image.png, link=wiki:PaperTutorials/Plos2013/SpiralWave, height=202px)]]
+[[Image(combined.png, link=wiki:PaperTutorials/Plos2013/CryptsAndVillus, height=202px)]]
+[[Image(spheroid_v2.png, link=wiki:PaperTutorials/Plos2013/SpheroidExperiments, height=202px)]]
 
-[[Image(composite.png, link=wiki:PaperTutorials/Plos2012/ElectroMechanics, height=200px)]]
+[[Image(composite.png, link=wiki:PaperTutorials/Plos2013/ElectroMechanics, height=200px)]]

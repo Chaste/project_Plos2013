@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2013, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTELECTROMECHANICSLITERATEPAPER_HPP_
 
 /*
- * [[Image(PaperTutorials/Plos2012:composite.png, align=right, height=150px)]]
+ * [[Image(PaperTutorials/Plos2013:composite.png, align=right, height=150px)]]
  * = Cardiac electro-mechanics: a cardiac tissue wedge with varying fibre directions =
  *
  * On this wiki page we describe in detail the code that is used to run this example from the paper.
@@ -48,7 +48,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Remember to run with `build=GccOptNative` for speed.
  * e.g.
- * `scons build=GccOptNative test_suite=projects/Plos2012/test/TestElectroMechanicsLiteratePaper.hpp`
+ * `scons build=GccOptNative test_suite=projects/Plos2013/test/TestElectroMechanicsLiteratePaper.hpp`
  *
  * This example uses only files from the core Chaste code.
  *
@@ -116,7 +116,7 @@ public:
         problem_defn.SetMechanicsSolveTimestep(1.0); // ms
 
 
-        std::string output_directory = "Plos2012_ElectroMechanics";
+        std::string output_directory = "Plos2013_ElectroMechanics";
         std::string fibre_file_name = "5by5by5_fibres.ortho";
 
         /*

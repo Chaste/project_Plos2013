@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2013, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTSPHEROIDEXPERIMENTSLITERATEPAPER_HPP_
 
 /*
- * [[Image(PaperTutorials/Plos2012:spheroid_v2.png, align=right, height=202px)]]
+ * [[Image(PaperTutorials/Plos2013:spheroid_v2.png, align=right, height=202px)]]
  * = Cell-based simulation: tumour spheroid with oxygen diffusion and uptake =
  *
  * On this wiki page we describe in detail the code that is used to run this example from the paper.
@@ -55,7 +55,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Remember to run with `build=GccOptNative` for speed.
  * e.g.
- * `scons build=GccOptNative test_suite=projects/Plos2012/test/TestSpheroidExperimentsLiteratePaper.hpp`
+ * `scons build=GccOptNative test_suite=projects/Plos2013/test/TestSpheroidExperimentsLiteratePaper.hpp`
  *
  * The easiest way to visualize this simulation is with paraview.
  *
@@ -169,7 +169,7 @@ public:
          * so this gives two visualisation outputs each hour.
          */
         simulator.SetSamplingTimestepMultiple(60);
-        simulator.SetOutputDirectory("Plos2012_MeshBasedSpheroidWithPde");
+        simulator.SetOutputDirectory("Plos2013_MeshBasedSpheroidWithPde");
 
         /* Set up PDE and boundary conditions */
         CellwiseSourcePde<3> pde(cell_population, -1.0);
@@ -218,11 +218,11 @@ public:
          * if you want to experiment with different interventions on
          * an existing spheroid state.
          */
-        FileFinder test_data_directory("Plos2012_MeshBasedSpheroidWithPde/archive",
+        FileFinder test_data_directory("Plos2013_MeshBasedSpheroidWithPde/archive",
                                        RelativeTo::ChasteTestOutput);
 
         /* We specify a location to copy the archive files from the previous test to */
-        OutputFileHandler archive_handler("Plos2012_LongerMeshBasedSpheroidWithPde/archive");
+        OutputFileHandler archive_handler("Plos2013_LongerMeshBasedSpheroidWithPde/archive");
 
         /* And copy the files across (this uses the boost filesystem library, incidnetally) */
         // Following is done in two lines to avoid a bug in Intel compiler v12.0!
@@ -234,11 +234,11 @@ public:
 
         /* Load the simulation up from 100 hours archive */
         OffLatticeSimulation<3>* p_simulator
-            = CellBasedSimulationArchiver<3, OffLatticeSimulation<3> >::Load("Plos2012_LongerMeshBasedSpheroidWithPde", 100);
+            = CellBasedSimulationArchiver<3, OffLatticeSimulation<3> >::Load("Plos2013_LongerMeshBasedSpheroidWithPde", 100);
 
         /* Change some settings, a new end time and output directory */
         p_simulator->SetEndTime(150);
-        p_simulator->SetOutputDirectory("Plos2012_LongerMeshBasedSpheroidWithPde");
+        p_simulator->SetOutputDirectory("Plos2013_LongerMeshBasedSpheroidWithPde");
 
         /* Run the simulation to the new end time */
         p_simulator->Solve();
