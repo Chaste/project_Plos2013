@@ -59,7 +59,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * e.g.
  * `scons build=GccOptNative test_suite=projects/Plos2013/test/TestCryptsAndVillusLiteratePaper.hpp`
  *
- * The easiest way to visualize this simulation is with paraview.
+ * The easiest way to visualize this simulation is with Paraview, as follows. After opening Paraview,
+ * load the file results.pvd, then click "Apply" in the object inspector panel. As this simulation
+ * uses a `NodeBasedCellPopulation`, you must use glyphs to visualize cells: click the button marked
+ * "Glyph" in the toolbar of common filters; specify cells to be displayed as spheres; then click "Apply".
  *
  *
  * == Code overview ==
