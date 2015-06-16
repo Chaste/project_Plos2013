@@ -204,13 +204,6 @@ public:
 
         /*
          * We now set up our cell-based simulation class.
-         * We have sub-classed the main simulator class `OffLatticeSimulation`
-         * which is in the core of Chaste with a new simulation class `SimplifiedDeltaNotchOffLatticeSimulation`
-         * which can be found in this project's `src` folder.
-         *
-         * The reason for this is that this class performs calculations of average Delta levels surrounding each cell
-         * at the end of each timestep. You will see a minimum number of methods have been overridden, and the class
-         * is fairly simple.
          */
         OffLatticeSimulation<3> simulator(crypt);
         simulator.SetOutputDirectory("Plos2013_MultipleCrypt");
@@ -218,7 +211,9 @@ public:
         /* We limit the output to every 120 time steps (1 hour) to reduce output file sizes */
         simulator.SetSamplingTimestepMultiple(120);
 
-        // Create a Delta-Notch tracking modifier and add it to the simulation
+        /* We now create a modifier, this can be found in the `src` folder,
+         * it updates the delta and notch levels on each timestep.
+         */
         MAKE_PTR(SimpleWntDeltaNotchTrackingModifier<3>, p_modifier);
         simulator.AddSimulationModifier(p_modifier);
 
