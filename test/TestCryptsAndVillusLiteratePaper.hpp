@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2013, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -75,22 +75,25 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Must be included before any other cell_based headers
 #include "CellBasedSimulationArchiver.hpp"
 
-#include "SimplifiedDeltaNotchOffLatticeSimulation.hpp"
-#include "DeltaNotchOffLatticeSimulation.hpp"
-#include "CryptCellsGenerator.hpp"
-#include "CellsGenerator.hpp"
+#include "OffLatticeSimulation.hpp"
 #include "RandomCellKiller.hpp"
-#include "CylindricalHoneycombMeshGenerator.hpp"
 #include "SloughingCellKiller.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
-#include "CellBasedEventHandler.hpp"
-#include "SimpleWntCellCycleModelWithDeltaNotch.hpp"
 #include "DeltaNotchCellCycleModel.hpp"
 #include "GeneralisedLinearSpringForce.hpp"
-
-#include "NodeBasedCellPopulation.hpp"
+#include "CellProliferativeTypesCountWriter.hpp"
+#include "CellBasedEventHandler.hpp"
+#include "CellMutationStatesWriter.hpp"
+#include "CellAncestorWriter.hpp"
 #include "PlaneBasedCellKiller.hpp"
+
+// Header files included in this project.
+#include "SimpleWntDeltaNotchTrackingModifier.hpp"
 #include "MultipleCryptGeometryBoundaryCondition.hpp"
+#include "SimpleWntCellCycleModelWithDeltaNotch.hpp"
+
+// Should usually be called last.
+#include "PetscSetupAndFinalize.hpp"
 
 class TestCryptsAndVillusLiteratePaper : public AbstractCellBasedTestSuite
 {
@@ -120,6 +123,8 @@ public:
      */
     void Test3dCrypt() throw (Exception)
     {
+        EXIT_IF_PARALLEL;
+
         /* First we set up some numbers that will define the crypt and villus geometry */
         double crypt_length = 4.0;
         double crypt_radius = 1.0;
@@ -145,7 +150,7 @@ public:
          * which doesn't do very much apart from keep track of the nodes.
          */
         NodesOnlyMesh<3> mesh;
-        mesh.ConstructNodesWithoutMesh(nodes);
+        mesh.ConstructNodesWithoutMesh(nodes, 1.5);
 
         /*
          * Next we have to create the cells that will be associated with these nodes.
@@ -153,6 +158,7 @@ public:
          * each node, adding cells as we go.
          */
         std::vector<CellPtr> cells;
+        MAKE_PTR(TransitCellProliferativeType, p_transit_type);
         MAKE_PTR(WildTypeCellMutationState, p_state);
         for (unsigned i=0; i<mesh.GetNumNodes(); i++)
         {
@@ -177,7 +183,7 @@ public:
             CellPtr p_cell(new Cell(p_state, p_model));
             double birth_time = 0.0;
             p_cell->SetBirthTime(birth_time);
-            p_cell->SetCellProliferativeType(TRANSIT);
+            p_cell->SetCellProliferativeType(p_transit_type);
             cells.push_back(p_cell);
         }
 
@@ -186,15 +192,15 @@ public:
          * In this case we need a `NodeBasedCellPopulation` in three dimensions.
          */
         NodeBasedCellPopulation<3> crypt(mesh, cells);
-        crypt.SetMechanicsCutOffLength(1.5);
+        crypt.SetCellAncestorsToLocationIndices();
 
         /* We limit the absolute movement that cells can make to cause error messages if numerics become unstable */
         crypt.SetAbsoluteMovementThreshold(10);
 
         /* We then instruct the cell population to output some useful information for plotting in VTK format in e.g. paraview */
-        crypt.SetOutputCellProliferativeTypes(true);
-        crypt.SetOutputCellMutationStates(true);
-        crypt.SetOutputCellAncestors(true);
+        crypt.AddCellPopulationCountWriter<CellProliferativeTypesCountWriter>();
+        crypt.AddCellWriter<CellMutationStatesWriter>();
+        crypt.AddCellWriter<CellAncestorWriter>();
 
         /*
          * We now set up our cell-based simulation class.
@@ -206,11 +212,15 @@ public:
          * at the end of each timestep. You will see a minimum number of methods have been overridden, and the class
          * is fairly simple.
          */
-		SimplifiedDeltaNotchOffLatticeSimulation<3> simulator(crypt);
+        OffLatticeSimulation<3> simulator(crypt);
         simulator.SetOutputDirectory("Plos2013_MultipleCrypt");
         simulator.SetDt(1.0/120.0);
         /* We limit the output to every 120 time steps (1 hour) to reduce output file sizes */
         simulator.SetSamplingTimestepMultiple(120);
+
+        // Create a Delta-Notch tracking modifier and add it to the simulation
+        MAKE_PTR(SimpleWntDeltaNotchTrackingModifier<3>, p_modifier);
+        simulator.AddSimulationModifier(p_modifier);
 
         /*
          * We now create a force law and pass it to the simulation
@@ -255,7 +265,7 @@ public:
         CellBasedEventHandler::Report();
         CellBasedEventHandler::Reset();
 
-        /* Having run the simulation to a roughly stead-state, and filled the villus with cells,
+        /* Having run the simulation to a roughly steady-state, and filled the villus with cells,
          * we now add a random cell killer to represent random death in the epithelial layer.
          */
         MAKE_PTR_ARGS(RandomCellKiller<3>, p_cell_killer_2,(&crypt, 0.005)); // prob of death in an hour

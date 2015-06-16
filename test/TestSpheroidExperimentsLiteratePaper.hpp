@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2013, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -80,12 +80,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AveragedSourcePde.hpp"
 #include "CellwiseSourcePde.hpp"
 #include "ConstBoundaryCondition.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "CellBasedPdeHandler.hpp"
 #include "ChastePoint.hpp"
 #include "SmartPointers.hpp"
 #include "ApoptoticCellKiller.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
+
+#include "PetscSetupAndFinalize.hpp"
 
 class TestSpheroidExperimentsLiteratePaper : public AbstractCellBasedTestSuite
 {
@@ -224,7 +225,7 @@ public:
         /* We specify a location to copy the archive files from the previous test to */
         OutputFileHandler archive_handler("Plos2013_LongerMeshBasedSpheroidWithPde/archive");
 
-        /* And copy the files across (this uses the boost filesystem library, incidnetally) */
+        /* And copy the files across (this uses the boost filesystem library, incidentally) */
         // Following is done in two lines to avoid a bug in Intel compiler v12.0!
         std::vector<FileFinder> temp_files = test_data_directory.FindMatches("*");
         BOOST_FOREACH(FileFinder temp_file, temp_files)

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,82 +33,63 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "SimplifiedDeltaNotchOffLatticeSimulation.hpp"
-#include "NodeBasedCellPopulation.hpp"
-#include "VertexBasedCellPopulation.hpp"
-#include "MeshBasedCellPopulation.hpp"
+#include "SimpleWntDeltaNotchTrackingModifier.hpp"
 #include "SimpleWntCellCycleModelWithDeltaNotch.hpp"
 
 template<unsigned DIM>
-SimplifiedDeltaNotchOffLatticeSimulation<DIM>::SimplifiedDeltaNotchOffLatticeSimulation(AbstractCellPopulation<DIM>& rCellPopulation,
-                                                                  bool deleteCellPopulationInDestructor,
-                                                                  bool initialiseCells)
-    : OffLatticeSimulation<DIM>(rCellPopulation, deleteCellPopulationInDestructor, initialiseCells)
+SimpleWntDeltaNotchTrackingModifier<DIM>::SimpleWntDeltaNotchTrackingModifier()
+    : AbstractCellBasedSimulationModifier<DIM>()
 {
 }
 
 template<unsigned DIM>
-SimplifiedDeltaNotchOffLatticeSimulation<DIM>::~SimplifiedDeltaNotchOffLatticeSimulation()
+SimpleWntDeltaNotchTrackingModifier<DIM>::~SimpleWntDeltaNotchTrackingModifier()
 {
 }
 
+template<unsigned DIM>
+void SimpleWntDeltaNotchTrackingModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
+{
+    UpdateCellData(rCellPopulation);
+}
 
 template<unsigned DIM>
-void SimplifiedDeltaNotchOffLatticeSimulation<DIM>::SetupSolve()
+void SimpleWntDeltaNotchTrackingModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory)
 {
-	OffLatticeSimulation<DIM>::SetupSolve(); // just outputs node velocities if requested.
+    /*
+     * We must update CellData in SetupSolve(), otherwise it will not have been
+     * fully initialised by the time we enter the main time loop.
+     */
+    UpdateCellData(rCellPopulation);
+}
 
-    // First store each cell's Notch and Delta concentrations in CellData
-	// This is done by cell cycle model after this first setup.
-    for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = this->mrCellPopulation.Begin();
-         cell_iter != this->mrCellPopulation.End();
+template<unsigned DIM>
+void SimpleWntDeltaNotchTrackingModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
+{
+    // Make sure the cell population is updated
+    rCellPopulation.Update();
+
+    // First recover each cell's Notch and Delta concentrations from the ODEs and store in CellData
+    for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
+         cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-      // This line is the only modification from the trunk class DeltaNotchOffLatticeSimulation
         SimpleWntCellCycleModelWithDeltaNotch* p_model = static_cast<SimpleWntCellCycleModelWithDeltaNotch*>(cell_iter->GetCellCycleModel());
-
         double this_delta = p_model->GetDelta();
         double this_notch = p_model->GetNotch();
 
+        // Note that the state variables must be in the same order as listed in DeltaNotchOdeSystem
         cell_iter->GetCellData()->SetItem("notch", this_notch);
         cell_iter->GetCellData()->SetItem("delta", this_delta);
     }
 
-	// Make sure the cell population is updated
-    this->mrCellPopulation.Update();
-
-    UpdateCellData();
-}
-
-template<unsigned DIM>
-void SimplifiedDeltaNotchOffLatticeSimulation<DIM>::UpdateAtEndOfTimeStep()
-{
-	OffLatticeSimulation<DIM>::UpdateAtEndOfTimeStep();
-
-    UpdateCellData();
-}
-
-template<unsigned DIM>
-void SimplifiedDeltaNotchOffLatticeSimulation<DIM>::UpdateCellData()
-{
     // Next iterate over the population to compute and store each cell's neighbouring Delta concentration in CellData
-    for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = this->mrCellPopulation.Begin();
-         cell_iter != this->mrCellPopulation.End();
+    for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
+         cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-        // Get the location index corresponding to this cell
-        unsigned index = this->mrCellPopulation.GetLocationIndexUsingCell(*cell_iter);
-
         // Get the set of neighbouring location indices
-        std::set<unsigned> neighbour_indices;
-        if (dynamic_cast<AbstractCentreBasedCellPopulation<DIM>*>(&(this->mrCellPopulation)))
-        {
-            neighbour_indices = this->mrCellPopulation.GetNeighbouringNodeIndices(index);
-        }
-        else
-        {
-            neighbour_indices = static_cast<VertexBasedCellPopulation<DIM>*>(&(this->mrCellPopulation))->rGetMesh().GetNeighbouringElementIndices(index);
-        }
+        std::set<unsigned> neighbour_indices = rCellPopulation.GetNeighbouringLocationIndices(*cell_iter);
 
         // Compute this cell's average neighbouring Delta concentration and store in CellData
         if (!neighbour_indices.empty())
@@ -118,7 +99,7 @@ void SimplifiedDeltaNotchOffLatticeSimulation<DIM>::UpdateCellData()
                  iter != neighbour_indices.end();
                  ++iter)
             {
-                CellPtr p_cell = this->mrCellPopulation.GetCellUsingLocationIndex(*iter);
+                CellPtr p_cell = rCellPopulation.GetCellUsingLocationIndex(*iter);
                 double this_delta = p_cell->GetCellData()->GetItem("delta");
                 mean_delta += this_delta/neighbour_indices.size();
             }
@@ -126,21 +107,24 @@ void SimplifiedDeltaNotchOffLatticeSimulation<DIM>::UpdateCellData()
         }
         else
         {
-            double this_delta = cell_iter->GetCellData()->GetItem("delta");
-            cell_iter->GetCellData()->SetItem("mean delta", this_delta);
+            // If this cell has no neighbours, such as an isolated cell in a CaBasedCellPopulation, store -1.0 for the cell data
+            cell_iter->GetCellData()->SetItem("mean delta", -1.0);
         }
-
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Explicit instantiation
-/////////////////////////////////////////////////////////////////////////////
+template<unsigned DIM>
+void SimpleWntDeltaNotchTrackingModifier<DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)
+{
+    // No parameters to output, so just call method on direct parent class
+    AbstractCellBasedSimulationModifier<DIM>::OutputSimulationModifierParameters(rParamsFile);
+}
 
-template class SimplifiedDeltaNotchOffLatticeSimulation<1>;
-template class SimplifiedDeltaNotchOffLatticeSimulation<2>;
-template class SimplifiedDeltaNotchOffLatticeSimulation<3>;
+// Explicit instantiation
+template class SimpleWntDeltaNotchTrackingModifier<1>;
+template class SimpleWntDeltaNotchTrackingModifier<2>;
+template class SimpleWntDeltaNotchTrackingModifier<3>;
 
 // Serialization for Boost >= 1.36
 #include "SerializationExportWrapperForCpp.hpp"
-EXPORT_TEMPLATE_CLASS_SAME_DIMS(SimplifiedDeltaNotchOffLatticeSimulation)
+EXPORT_TEMPLATE_CLASS_SAME_DIMS(SimpleWntDeltaNotchTrackingModifier)

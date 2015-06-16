@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2013, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -61,13 +61,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <cxxtest/TestSuite.h>
 #include "PlaneStimulusCellFactory.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "LuoRudy1991.hpp"
 #include "NonlinearElasticityTools.hpp"
 #include "CardiacElectroMechanicsProblem.hpp"
 #include "FileFinder.hpp"
 #include "VtkMeshWriter.hpp"
 
+#include "PetscSetupAndFinalize.hpp"
 
 class TestElectroMechanicsLiteratePaper : public CxxTest::TestSuite
 {

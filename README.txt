@@ -10,7 +10,7 @@ It must be checked out into
 
 <chaste directory>/projects/Plos2013 
 
-in order for file paths to be picked up correctly, and it should be used with Chaste v3.1
+in order for file paths to be picked up correctly, and it should be used with Chaste v3.3
 
 To run the examples you should do (for example):
 cd <chaste directory>
