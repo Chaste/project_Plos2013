@@ -2,6 +2,8 @@ README.txt
 
  Created on: 8th  May 2012
  Updated on: 31st Jan 2013
+ Updated on: 16th Jun 2015 (to work with v3.3 and up to r24460).
+ 
      Author: Gary Mirams
      
 This project contains all the code required to recreate the results in the PloS 2013 paper.
