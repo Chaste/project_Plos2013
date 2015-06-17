@@ -134,7 +134,6 @@ public:
 
         /* Set up cells for each of the nodes in the mesh */
         boost::shared_ptr<AbstractCellMutationState> p_state(new WildTypeCellMutationState);
-        MAKE_PTR(TransitCellProliferativeType, p_transit_type);
         // We use the stem cell G1 duration, so make these 'stem' cells
         MAKE_PTR(StemCellProliferativeType, p_stem_type);
         std::vector<CellPtr> cells;
