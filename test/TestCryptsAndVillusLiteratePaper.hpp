@@ -79,7 +79,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RandomCellKiller.hpp"
 #include "SloughingCellKiller.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
-#include "DeltaNotchCellCycleModel.hpp"
+#include "DeltaNotchSrnModel.hpp"
+#include "SimpleWntCellCycleModel.hpp"
+#include "DeltaNotchTrackingModifier.hpp"
 #include "GeneralisedLinearSpringForce.hpp"
 #include "CellProliferativeTypesCountWriter.hpp"
 #include "CellBasedEventHandler.hpp"
@@ -88,9 +90,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PlaneBasedCellKiller.hpp"
 
 // Header files included in this project.
-#include "SimpleWntDeltaNotchTrackingModifier.hpp"
 #include "MultipleCryptGeometryBoundaryCondition.hpp"
-#include "SimpleWntCellCycleModelWithDeltaNotch.hpp"
 
 // Should usually be called last.
 #include "PetscSetupAndFinalize.hpp"
@@ -165,22 +165,20 @@ public:
             /*
              * This cell cycle model carries a Delta-Notch signalling model,
              * and also a simple rule about division based on extracellular Wnt concentration.
-             *
-             * The cell cycle models provide interfaces to ODE solvers, so even though Delta-Notch does
-             * not directly influence the cell cycle time it is a handy place to host the ODEs.
-             * This may be refactored to a more flexible arrangement in future versions of Chaste.
              */
-            SimpleWntCellCycleModelWithDeltaNotch* p_model = new SimpleWntCellCycleModelWithDeltaNotch();
-            p_model->SetDimension(3);
+            SimpleWntCellCycleModel* p_cc_model = new SimpleWntCellCycleModel();
+            p_cc_model->SetDimension(3);
+
+            DeltaNotchSrnModel* p_srn_model = new DeltaNotchSrnModel();
 
             /* We choose to initialise the Delta and Notch concentrations to random levels in each cell */
             std::vector<double> initial_conditions;
             initial_conditions.push_back(RandomNumberGenerator::Instance()->ranf());
             initial_conditions.push_back(RandomNumberGenerator::Instance()->ranf());
-            p_model->SetInitialConditions(initial_conditions);
+            p_srn_model->SetInitialConditions(initial_conditions);
 
-            /* We then create a cell with a mutation state (Wild Type in this case) and a cell cycle model */
-            CellPtr p_cell(new Cell(p_state, p_model));
+            /* We then create a cell with a mutation state (Wild Type in this case), a cell cycle model and an srn model */
+            CellPtr p_cell(new Cell(p_state, p_cc_model, p_srn_model));
             double birth_time = 0.0;
             p_cell->SetBirthTime(birth_time);
             p_cell->SetCellProliferativeType(p_transit_type);
@@ -211,10 +209,9 @@ public:
         /* We limit the output to every 120 time steps (1 hour) to reduce output file sizes */
         simulator.SetSamplingTimestepMultiple(120);
 
-        /* We now create a modifier, this can be found in the `src` folder,
-         * it updates the delta and notch levels on each timestep.
+        /* We now create a modifier, which updates the delta and notch levels on each timestep.
          */
-        MAKE_PTR(SimpleWntDeltaNotchTrackingModifier<3>, p_modifier);
+        MAKE_PTR(DeltaNotchTrackingModifier<3>, p_modifier);
         simulator.AddSimulationModifier(p_modifier);
 
         /*
