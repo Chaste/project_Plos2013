@@ -2,7 +2,8 @@ README.txt
 
  Created on: 8th  May 2012
  Updated on: 31st Jan 2013
- Updated on: 16th Jun 2015 (to work with v3.3 and up to r24460).
+ Updated on: 16th Jun 2015 (to work with v3.3 and up to r24460)
+ Updated on: 16th Feb 2016 (to work with v3.4 and up to r26040)
  
      Author: Gary Mirams
      
@@ -12,7 +13,7 @@ It must be checked out into
 
 <chaste directory>/projects/Plos2013 
 
-in order for file paths to be picked up correctly, and it should be used with Chaste v3.3
+in order for file paths to be picked up correctly, and it should be used with Chaste v3.4
 
 To run the examples you should do (for example):
 cd <chaste directory>
