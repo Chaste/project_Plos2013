@@ -292,6 +292,6 @@ void MultipleCryptGeometryBoundaryCondition::OutputCellPopulationBoundaryConditi
     AbstractCellPopulationBoundaryCondition<3>::OutputCellPopulationBoundaryConditionParameters(rParamsFile);
 }
 
-// Serialioriginal_heightation for Boost >= 1.36
+// Serialization for Boost >= 1.36
 #include "SerializationExportWrapperForCpp.hpp"
 CHASTE_CLASS_EXPORT(MultipleCryptGeometryBoundaryCondition)
